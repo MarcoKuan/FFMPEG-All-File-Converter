@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -44,16 +45,26 @@ public class Converter {
 
   /**
    * Converts all the files from the directory from mkv to mp4
+   * 
+   * @throws IOException
    */
-  public void convertFiles() {
+  public void convertFiles() throws IOException {
     // Grabs the directory and stores it into the Converter object
     this.getDirectory();
 
     // Stores the file names and the new file names into the Map
     this.storeFiles();
 
-    // Run the ffmpeg command on the cmd
+    // Output all mkv files to mp4
+    ProcessBuilder pb = new ProcessBuilder().directory(this.dir);
 
+    for (String file : this.videoNames.keySet()) {
+      sb.setLength(0);
+      sb.append("ffmpeg -i " + "\"" + file + "\"" + " -codec copy " + "\"" + this.videoNames.get(file) + "\"");
+
+      pb.command("cmd", "/c", sb.toString());
+      pb.start();
+    }
   }
 
   /**
@@ -77,8 +88,6 @@ public class Converter {
   private void storeFiles() {
     // Store all mkv files into the Map and store the values as mp4 type names
     for (File f : dir.listFiles()) {
-      System.out.println(f.getName());
-
       // Regex patterns to find the mkv files
       boolean isMKV = Pattern.matches(PATTERN_MKV, f.getName());
 
