@@ -3,11 +3,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 /**
- * File converter class that will grab the names of all mkv files in the
- * directory and convert it into mp4 files.
+ * File converter class that will grab the names of all currentType files in the
+ * directory and convert it into convertedType files.
  * 
  * @author Marco
  */
@@ -16,7 +15,7 @@ public class Converter {
   /**
    * Stores the original file name and converted file name
    */
-  private Map<String, String> videoNames;
+  private final Map<String, String> videoNames;
 
   /**
    * File that holds the directory
@@ -26,25 +25,36 @@ public class Converter {
   /**
    * Manipulate the file names for map storage
    */
-  private StringBuilder sb;
+  private final StringBuilder sb;
 
   /**
-   * Private static strings
+   * Stores the type that needs to be converted
    */
-  private static final String PATTERN_MKV = ".*\\.mkv";
-  private static final String TYPE_MKV = ".mkv";
-  private static final String TYPE_MP4 = ".mp4";
+  private String currentType;
 
   /**
-   * Constructor that initializes the ArrayList for storing video names
+   * Stores the type to be converted
    */
-  public Converter() {
+  private String convertedType;
+
+  /**
+   * Takes input and uses it to store into variables
+   */
+  private final Scanner sc;
+
+/**
+ * Constructor that initializes the ArrayList for storing video names
+ * 
+ * @param sc the scanner that reads input
+ */
+  public Converter(Scanner sc) {
     this.videoNames = new HashMap<>();
     this.sb = new StringBuilder();
+    this.sc = sc;
   }
 
   /**
-   * Converts all the files from the directory from mkv to mp4
+   * Converts all the files from the directory from currentType to convertedType
    * 
    * @throws IOException
    */
@@ -52,10 +62,13 @@ public class Converter {
     // Grabs the directory and stores it into the Converter object
     this.getDirectory();
 
+    // Get file types to read and convert to
+    this.getFileTypes();
+
     // Stores the file names and the new file names into the Map
     this.storeFiles();
 
-    // Output all mkv files to mp4
+    // Output all currentType files to convertedType
     ProcessBuilder pb = new ProcessBuilder().directory(this.dir);
 
     for (String file : this.videoNames.keySet()) {
@@ -73,12 +86,21 @@ public class Converter {
   private void getDirectory() {
     // Prompt for directory
     System.out.print("Enter the location of the directory: ");
+    String dirName = sc.nextLine();
 
-    try (Scanner scan = new Scanner(System.in)) {
-      String dirName = scan.nextLine();
+    this.dir = new File(dirName);
+  }
 
-      this.dir = new File(dirName);
-    }
+  /**
+   * Grabs the type of the file and converted file through user input
+   */
+  private void getFileTypes() {
+    // Prompt for directory
+    System.out.print("Enter the file type to search for (example: mp4, mkv, etc): ");
+    this.currentType = "." + sc.nextLine();
+
+    System.out.print("Enter the file type to convert to (example: mp4, mkv, etc): ");
+    this.convertedType = "." + sc.nextLine();
   }
 
   /**
@@ -86,22 +108,21 @@ public class Converter {
    * the Map, as well as the new file names as its values
    */
   private void storeFiles() {
-    // Store all mkv files into the Map and store the values as mp4 type names
+    // Store all currentType files into the Map and store the values as
+    // convertedType names
     for (File f : dir.listFiles()) {
-      // Regex patterns to find the mkv files
-      boolean isMKV = Pattern.matches(PATTERN_MKV, f.getName());
-
-      // Stores the mkv file into the map and the value is stored as mp4
-      if (isMKV) {
+      // Stores the currentType files into the map and the value is stored as the
+      // convertedType
+      if (f.toString().endsWith(this.currentType)) {
         // Resets to the newest name of the file
         this.sb.setLength(0);
 
         // Obtain the last index of the type in the string
-        int typeIndex = f.getName().lastIndexOf(TYPE_MKV);
+        int typeIndex = f.getName().lastIndexOf(this.currentType);
 
-        // Append the new file name into mp4
+        // Append the new file name into convertedType
         sb.append(f.getName().toString().substring(0, typeIndex));
-        sb.append(TYPE_MP4);
+        sb.append(this.convertedType);
 
         // Store the converted version as the value
         this.videoNames.put(f.getName(), sb.toString());
@@ -117,23 +138,23 @@ public class Converter {
     // Reset the current StringBuilder
     sb.setLength(0);
 
-    // Store the mkv names
+    // Store the currentType names
     int i = 1;
 
-    sb.append(".mkv names: " + "\n");
+    sb.append(this.currentType + " names: " + "\n");
 
     for (String fileName : this.videoNames.keySet()) {
       sb.append(i + ": " + fileName + "\n");
       i++;
     }
 
-    // Separate the mp4 and mkv by a new line
+    // Separate the convertedType and currentType by a new line
     sb.append("\n");
 
-    // Store the mp4 names
+    // Store the convertedType names
     i = 1;
 
-    sb.append(".mp4 names: " + "\n");
+    sb.append(this.convertedType + " names: " + "\n");
 
     for (String fileName : this.videoNames.values()) {
       sb.append(i + ": " + fileName + "\n");
