@@ -18,14 +18,19 @@ public class Converter {
   private final Map<String, String> videoNames;
 
   /**
-   * File that holds the directory
-   */
-  private File dir;
-
-  /**
    * Manipulate the file names for map storage
    */
   private final StringBuilder sb;
+
+  /**
+   * Takes input and uses it to store into variables
+   */
+  private final Scanner sc;
+
+  /**
+   * File that holds the directory
+   */
+  private File dir;
 
   /**
    * Stores the type that needs to be converted
@@ -36,21 +41,67 @@ public class Converter {
    * Stores the type to be converted
    */
   private String convertedType;
+  
+  /**
+   * Determines if there should be any conversion
+   */
+  private boolean convertBool;
 
   /**
-   * Takes input and uses it to store into variables
+   * String asking for the option
    */
-  private final Scanner sc;
+  private static final String OPTION_MSG = "Choose 1 (Current Directory) or 2 (Enter the Directory Location) (NOTE: All options will exit): ";
 
-/**
- * Constructor that initializes the ArrayList for storing video names
- * 
- * @param sc the scanner that reads input
- */
+  /**
+   * String asking for the directory
+   */
+  private static final String DIR_MSG = "Enter the location of the directory: ";
+
+  /**
+   * String for toString about names of the file
+   */
+  private static final String NAMES_MSG = " names: ";
+
+  /**
+   * String asking what file type to search for
+   */
+  private static final String SEARCH_TYPE_MSG = "Enter the file type to search for (example: mp4, mkv, etc): ";
+  
+  /**
+   * String asking what file type to convert to
+   */
+  private static final String CONVERT_TYPE_MSG = "Enter the file type to convert to (example: mp4, mkv, etc): ";
+  
+  /**
+   * String for the first option
+   */
+  private static final String OPTION_ONE = "1";
+  
+  /**
+   * String for the second option
+   */
+  private static final String OPTION_TWO = "2";
+  
+  /**
+   * String for Copying the message
+   */
+  private static final String CONVERT_MSG = "Copy conversion complete!";
+  
+  /**
+   * String for exiting message
+   */
+  private static final String EXIT_MSG = "Exiting!";
+
+  /**
+   * Constructor that initializes the ArrayList for storing video names
+   * 
+   * @param sc the scanner that reads input
+   */
   public Converter(Scanner sc) {
     this.videoNames = new HashMap<>();
     this.sb = new StringBuilder();
     this.sc = sc;
+    this.convertBool = true;
   }
 
   /**
@@ -61,6 +112,11 @@ public class Converter {
   public void convertFiles() throws IOException {
     // Grabs the directory and stores it into the Converter object
     this.getDirectory();
+
+    // Exit the program if no directory was obtained
+    if (!this.convertBool) {
+      return;
+    }
 
     // Get file types to read and convert to
     this.getFileTypes();
@@ -78,15 +134,34 @@ public class Converter {
       pb.command("cmd", "/c", sb.toString());
       pb.start();
     }
+    
+    System.out.println(CONVERT_MSG);
   }
 
   /**
    * Grabs the name of the directory location through user input
    */
   private void getDirectory() {
-    // Prompt for directory
-    System.out.print("Enter the location of the directory: ");
-    String dirName = sc.nextLine();
+    String choice;
+    String dirName;
+
+    // Choose the current directory or enter directory location
+    System.out.print(OPTION_MSG);
+    choice = sc.nextLine();
+
+    if (choice.equals(OPTION_ONE)) {
+      // Gets the directory from the location of the program
+      dirName = System.getProperty("user.dir");
+    } else if (choice.equals(OPTION_TWO)) {
+      // Prompt for directory
+      System.out.print(DIR_MSG);
+      dirName = sc.nextLine();
+    } else {
+      // Exit
+      this.convertBool = false;
+      System.out.println(EXIT_MSG);
+      return;
+    }
 
     this.dir = new File(dirName);
   }
@@ -96,10 +171,10 @@ public class Converter {
    */
   private void getFileTypes() {
     // Prompt for directory
-    System.out.print("Enter the file type to search for (example: mp4, mkv, etc): ");
+    System.out.print(SEARCH_TYPE_MSG);
     this.currentType = "." + sc.nextLine();
 
-    System.out.print("Enter the file type to convert to (example: mp4, mkv, etc): ");
+    System.out.print(CONVERT_TYPE_MSG);
     this.convertedType = "." + sc.nextLine();
   }
 
@@ -141,7 +216,7 @@ public class Converter {
     // Store the currentType names
     int i = 1;
 
-    sb.append(this.currentType + " names: " + "\n");
+    sb.append(this.currentType + NAMES_MSG + "\n");
 
     for (String fileName : this.videoNames.keySet()) {
       sb.append(i + ": " + fileName + "\n");
@@ -154,7 +229,7 @@ public class Converter {
     // Store the convertedType names
     i = 1;
 
-    sb.append(this.convertedType + " names: " + "\n");
+    sb.append(this.convertedType + NAMES_MSG + "\n");
 
     for (String fileName : this.videoNames.values()) {
       sb.append(i + ": " + fileName + "\n");
