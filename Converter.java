@@ -50,7 +50,7 @@ public class Converter {
   /**
    * String asking for the option
    */
-  private static final String OPTION_MSG = "Choose 1 (Current Directory) or 2 (Enter the Directory Location) (NOTE: All options will exit): ";
+  private static final String OPTION_MSG = "Choose 1 (Current Directory) or 2 (Enter the Directory Location) (NOTE: Other options will exit): ";
 
   /**
    * String asking for the directory
