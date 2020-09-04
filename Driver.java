@@ -20,7 +20,5 @@ public class Driver {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
-    System.out.println("Copy conversion complete!");
   }
 }
