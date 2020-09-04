@@ -11,3 +11,8 @@ ffmpeg: https://ffmpeg.org/download.html
 ## Compatibility
 
 Windows 10 (Tested on my Desktop)
+
+## Examples
+
+![image](https://github.com/MarcoKuan/FFMPEG-All-File-Converter/blob/master/Example%201.PNG)
+![image](https://github.com/MarcoKuan/FFMPEG-All-File-Converter/blob/master/Example%202.PNG)
